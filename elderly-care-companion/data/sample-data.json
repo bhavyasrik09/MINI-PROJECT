@@ -1,0 +1,11 @@
+{
+  "medicines": [
+    {"id":"m1","name":"Aspirin","time":"09:00","status":"pending"},
+    {"id":"m2","name":"Vitamin D","time":"20:00","status":"pending"}
+  ],
+  "appointments": [
+    {"id":"a1","title":"Dr. Smith - Clinic","datetime":"2026-02-10T10:30:00","phone":"+123456789"}
+  ],
+  "sos": [],
+  "lastInteraction": null
+}

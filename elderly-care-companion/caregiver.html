@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Caregiver Dashboard</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/caregiver.css">
+</head>
+<body>
+  <header class="header">
+    <h1>Caregiver Dashboard</h1>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="care-help" class="big-btn secondary">Help</button>
+      <button id="refresh">Refresh</button>
+    </div>
+  </header>
+  <main class="dashboard">
+    <div class="help-panel" id="care-help-panel" style="display:none">
+      <strong>Caregiver tips</strong>
+      <div class="help-list">Open this page to monitor medicines, missed doses and SOS alerts. Refresh updates every 5 seconds.</div>
+    </div>
+    <section id="status-cards"></section>
+    <section id="med-table" class="card">
+      <h2>Medicine Status</h2>
+      <ul id="med-status-list"></ul>
+    </section>
+    <section id="sos-log" class="card">
+      <h2>SOS Alerts</h2>
+      <ul id="sos-list"></ul>
+    </section>
+  </main>
+  <script src="js/storage.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script>
+    document.getElementById('refresh').addEventListener('click', ()=> dashboard.render());
+    dashboard.render();
+    setInterval(dashboard.render, 5000);
+  </script>
+</body>
+</html>

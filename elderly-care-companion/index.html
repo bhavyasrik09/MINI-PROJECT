@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Elderly Care Companion — Elder</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/elder.css">
+</head>
+<body>
+  <main class="container">
+    <div class="hero">
+      <div class="brand">Elderly Care Companion</div>
+      <div style="display:flex;gap:8px">
+        <button id="help-btn" class="big-btn secondary">Help</button>
+        <button id="voice-tips-btn" class="big-btn secondary">Voice Tips</button>
+      </div>
+    </div>
+    <h1 class="title">Simple, voice-first reminders</h1>
+
+    <div class="help-panel" id="help-panel">
+      <h3>Quick Start</h3>
+      <ol class="help-list">
+        <li>Add a medicine: type the name, pick a time, then click Add.</li>
+        <li>When a reminder sounds, say <strong>"Taken"</strong> to confirm.</li>
+        <li>Use the <strong>🎤 Voice</strong> button to ask: <em>Next medicine</em>, <em>Today's schedule</em>, or <em>Call my son</em>.</li>
+        <li>Press <strong>🚨 SOS</strong> to send location to the caregiver dashboard (if allowed).</li>
+      </ol>
+    </div>
+
+    <section id="medicine" class="card">
+      <h2>Medicine Reminders</h2>
+      <form id="med-form">
+        <input id="med-name" placeholder="Medicine name" required />
+        <input id="med-time" type="time" required />
+        <button type="submit">Add</button>
+      </form>
+      <ul id="medicine-list"></ul>
+    </section>
+
+    <section id="appointments" class="card">
+      <h2>Appointments</h2>
+      <form id="app-form">
+        <input id="app-title" placeholder="Title (e.g. Dr. Smith)" required />
+        <input id="app-datetime" type="datetime-local" required />
+        <input id="app-phone" placeholder="Phone (+country)" />
+        <button type="submit">Add</button>
+      </form>
+      <ul id="appointment-list"></ul>
+    </section>
+
+    <div class="controls">
+      <button id="voice-btn" class="big-btn">🎤 Voice</button>
+      <button id="sos-btn" class="sos-btn">🚨 SOS</button>
+    </div>
+
+    <audio id="alert-audio" src="assets/audio/alert.mp3"></audio>
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/medicine.js"></script>
+  <script src="js/sos.js"></script>
+  <script src="js/assistant.js"></script>
+  <script>
+    // simple form wiring
+    const medForm = document.getElementById('med-form');
+    medForm?.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = document.getElementById('med-name').value.trim();
+      const time = document.getElementById('med-time').value;
+      if(name && time){ storage.addMedicine({ name, time }); medicine.renderList(); medForm.reset(); voice.speak(`${name} at ${time} added.`); }
+    });
+
+    const appForm = document.getElementById('app-form');
+    appForm?.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const title = document.getElementById('app-title').value.trim();
+      const datetime = document.getElementById('app-datetime').value;
+      const phone = document.getElementById('app-phone').value.trim();
+      if(title && datetime){ storage.addAppointment({ title, datetime, phone });
+        renderAppointments(); appForm.reset(); voice.speak(`Appointment ${title} added.`); }
+    });
+
+    function renderAppointments(){
+      const ul = document.getElementById('appointment-list'); if(!ul) return; ul.innerHTML='';
+      const apps = storage.getAppointments();
+      apps.forEach(a=>{ const li = document.createElement('li'); const phonePart = a.phone? ` — <a href="tel:${a.phone}">Call</a>`: '';
+        li.innerHTML = `${a.title} — ${a.datetime}${phonePart}`; ul.appendChild(li); });
+    }
+
+    // Help panel controls
+    document.getElementById('help-btn')?.addEventListener('click', ()=>{
+      const panel = document.getElementById('help-panel'); panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    });
+    document.getElementById('voice-tips-btn')?.addEventListener('click', ()=>{
+      assistant.speakUsage();
+    });
+
+    window.addEventListener('load', ()=>{ medicine.renderList(); renderAppointments(); });
+  </script>
+  <script>
+    document.getElementById('voice-btn').addEventListener('click', ()=>{ assistant.listenForCommand(); });
+    document.getElementById('sos-btn').addEventListener('click', ()=>{ sos.triggerManualSOS(); });
+  </script>
+</body>
+</html>
