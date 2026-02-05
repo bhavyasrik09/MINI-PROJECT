@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+    button { padding: 10px 15px; margin: 5px; cursor: pointer; font-size: 14px; border: none; border-radius: 4px; background: #0366d6; color: white; }
+    button:hover { background: #0256c5; }
+    .output { margin-top: 10px; padding: 10px; background: #f9f9f9; border-left: 3px solid #0366d6; font-size: 12px; font-family: monospace; white-space: pre-wrap; min-height: 30px; }
+    .success { color: #16a34a; }
+    .error { color: #dc2626; }
+    .info { color: #0366d6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎤 Voice System Diagnostic</h1>
+    
+    <div class="test-section">
+      <h3>1. Browser Compatibility Check</h3>
+      <button onclick="testBrowserSupport()">Check Browser Support</button>
+      <div id="output1" class="output">Results will appear here...</div>
+    </div>
+
+    <div class="test-section">
+      <h3>2. Speech Synthesis Test (Speaker)</h3>
+      <button onclick="testSpeakSimple()">Speak: Hello World</button>
+      <button onclick="testSpeakLong()">Speak: Long Sentence</button>
+      <div id="output2" class="output">Results will appear here...</div>
+    </div>
+
+    <div class="test-section">
+      <h3>3. Speech Recognition Test (Microphone)</h3>
+      <button onclick="testListenOnce()">Listen Once (5 sec)</button>
+      <button onclick="testListenContinuous()">Listen Continuous (10 sec)</button>
+      <div id="output3" class="output">Results will appear here...</div>
+    </div>
+
+    <div class="test-section">
+      <h3>4. Microphone Permission Check</h3>
+      <button onclick="testMicPermission()">Check Mic Permission</button>
+      <div id="output4" class="output">Results will appear here...</div>
+    </div>
+
+    <div class="test-section">
+      <h3>5. Load Voice Module</h3>
+      <button onclick="testVoiceModule()">Test Voice Module</button>
+      <div id="output5" class="output">Results will appear here...</div>
+    </div>
+
+    <div class="test-section">
+      <h3>6. Full Integration Test</h3>
+      <button onclick="testFullFlow()">Run Full Flow</button>
+      <div id="output6" class="output">Results will appear here...</div>
+    </div>
+  </div>
+
+  <script src="js/voice.js"></script>
+
+  <script>
+    function log(elementId, message, type = 'info') {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+      const newLine = `[${timestamp}] ${prefix} ${message}\n`;
+      el.textContent += newLine;
+      el.classList.add(type);
+    }
+
+    function testBrowserSupport() {
+      const el = 'output1';
+      document.getElementById(el).textContent = '';
+      
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const SpeechSynthesis = window.speechSynthesis;
+      
+      log(el, 'Testing browser support...', 'info');
+      
+      if (SpeechRecognition) {
+        log(el, 'Speech Recognition API: SUPPORTED ✓', 'success');
+      } else {
+        log(el, 'Speech Recognition API: NOT SUPPORTED ✗', 'error');
+      }
+      
+      if (SpeechSynthesis) {
+        log(el, 'Speech Synthesis API: SUPPORTED ✓', 'success');
+      } else {
+        log(el, 'Speech Synthesis API: NOT SUPPORTED ✗', 'error');
+      }
+      
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        log(el, 'Microphone API: SUPPORTED ✓', 'success');
+      } else {
+        log(el, 'Microphone API: NOT SUPPORTED ✗', 'error');
+      }
+    }
+
+    function testSpeakSimple() {
+      document.getElementById('output2').textContent = '';
+      log('output2', 'Attempting to speak: "Hello World"', 'info');
+      try {
+        speechSynthesis.cancel();
+        const ut = new SpeechSynthesisUtterance('Hello World');
+        ut.lang = 'en-US';
+        ut.onstart = () => log('output2', 'Speech started', 'info');
+        ut.onend = () => log('output2', 'Speech ended', 'success');
+        ut.onerror = (e) => log('output2', `Speech error: ${e.error}`, 'error');
+        speechSynthesis.speak(ut);
+      } catch (e) {
+        log('output2', `Exception: ${e.message}`, 'error');
+      }
+    }
+
+    function testSpeakLong() {
+      document.getElementById('output2').textContent = '';
+      log('output2', 'Attempting to speak long sentence', 'info');
+      try {
+        speechSynthesis.cancel();
+        const ut = new SpeechSynthesisUtterance('Hello, my name is Care Companion. I can help you with your medicines and appointments. Please speak naturally and I will understand.');
+        ut.lang = 'en-US';
+        ut.rate = 0.9;
+        ut.onstart = () => log('output2', 'Speech started', 'info');
+        ut.onend = () => log('output2', 'Speech ended successfully', 'success');
+        ut.onerror = (e) => log('output2', `Speech error: ${e.error}`, 'error');
+        speechSynthesis.speak(ut);
+      } catch (e) {
+        log('output2', `Exception: ${e.message}`, 'error');
+      }
+    }
+
+    function testListenOnce() {
+      document.getElementById('output3').textContent = '';
+      log('output3', 'Starting voice recognition (5 sec timeout)', 'info');
+      log('output3', 'Please speak now...', 'info');
+      
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        log('output3', 'Speech Recognition not available', 'error');
+        return;
+      }
+
+      const rec = new SpeechRecognition();
+      rec.lang = 'en-US';
+      rec.maxAlternatives = 3;
+      
+      rec.onstart = () => log('output3', 'Recognition started', 'info');
+      rec.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        const confidence = e.results[0][0].confidence;
+        log('output3', `Heard: "${transcript}" (Confidence: ${Math.round(confidence * 100)}%)`, 'success');
+      };
+      rec.onerror = (e) => log('output3', `Error: ${e.error}`, 'error');
+      rec.onend = () => log('output3', 'Recognition ended', 'info');
+      
+      try {
+        rec.start();
+      } catch (e) {
+        log('output3', `Start error: ${e.message}`, 'error');
+      }
+
+      setTimeout(() => {
+        try { rec.stop(); } catch (e) { }
+      }, 5000);
+    }
+
+    function testListenContinuous() {
+      document.getElementById('output3').textContent = '';
+      log('output3', 'Starting continuous recognition (10 sec timeout)', 'info');
+      log('output3', 'Please speak now...', 'info');
+      
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        log('output3', 'Speech Recognition not available', 'error');
+        return;
+      }
+
+      const rec = new SpeechRecognition();
+      rec.lang = 'en-US';
+      rec.continuous = true;
+      rec.maxAlternatives = 3;
+      let resultCount = 0;
+      
+      rec.onstart = () => log('output3', 'Recognition started', 'info');
+      rec.onresult = (e) => {
+        resultCount++;
+        const transcript = e.results[e.results.length - 1][0].transcript;
+        const confidence = e.results[e.results.length - 1][0].confidence;
+        log('output3', `Result #${resultCount}: "${transcript}" (${Math.round(confidence * 100)}%)`, 'success');
+      };
+      rec.onerror = (e) => log('output3', `Error: ${e.error}`, 'error');
+      rec.onend = () => log('output3', `Recognition ended (${resultCount} results)`, 'info');
+      
+      try {
+        rec.start();
+      } catch (e) {
+        log('output3', `Start error: ${e.message}`, 'error');
+      }
+
+      setTimeout(() => {
+        try { rec.stop(); } catch (e) { }
+      }, 10000);
+    }
+
+    function testMicPermission() {
+      document.getElementById('output4').textContent = '';
+      log('output4', 'Checking microphone permissions...', 'info');
+      
+      if (!navigator.mediaDevices) {
+        log('output4', 'mediaDevices API not available', 'error');
+        return;
+      }
+
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then((stream) => {
+          log('output4', 'Microphone access GRANTED ✓', 'success');
+          stream.getTracks().forEach(track => track.stop());
+        })
+        .catch((err) => {
+          const errorMsg = {
+            'NotAllowedError': 'Permission denied by user',
+            'NotFoundError': 'No microphone found',
+            'SecurityError': 'Accessed from insecure context'
+          }[err.name] || err.name;
+          log('output4', `Microphone access DENIED: ${errorMsg}`, 'error');
+        });
+    }
+
+    function testVoiceModule() {
+      document.getElementById('output5').textContent = '';
+      
+      if (typeof voice === 'undefined') {
+        log('output5', 'voice module not loaded', 'error');
+        return;
+      }
+
+      log('output5', 'voice module is LOADED ✓', 'success');
+      log('output5', 'Available methods:', 'info');
+      log('output5', `  - voice.speak(text)`, 'info');
+      log('output5', `  - voice.listenOnce(callback, opts)`, 'info');
+
+      log('output5', 'Testing voice.speak()...', 'info');
+      voice.speak('Voice module is working correctly');
+      log('output5', 'speak() called', 'success');
+    }
+
+    function testFullFlow() {
+      document.getElementById('output6').textContent = '';
+      log('output6', 'Starting full integration test', 'info');
+      
+      if (typeof voice === 'undefined') {
+        log('output6', 'voice module not loaded', 'error');
+        return;
+      }
+
+      log('output6', 'Step 1: Speaking intro...', 'info');
+      voice.speak('Starting full test. I will speak, then listen for your response.');
+
+      setTimeout(() => {
+        log('output6', 'Step 2: Listening for your voice...', 'info');
+        voice.listenOnce((transcript) => {
+          if (!transcript) {
+            log('output6', 'No speech detected', 'error');
+            return;
+          }
+          log('output6', `Step 3: Heard: "${transcript}"`, 'success');
+          voice.speak(`You said: ${transcript}. Test completed.`);
+          log('output6', 'Test finished', 'success');
+        }, { timeout: 8000 });
+      }, 2000);
+    }
+
+    // Run initial tests on load
+    window.addEventListener('load', () => {
+      testBrowserSupport();
+    });
+  </script>
+</body>
+</html>

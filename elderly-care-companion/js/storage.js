@@ -40,6 +40,6 @@ const storage = (function(){
   function getSOS(){ return load().sos; }
   function getState(){ return load(); }
   function reset(){ const s = defaultState(); save(s); }
-  return { getMedicines, updateMedicine, getAppointments, pushSOS, getSOS, getState, reset };
+  return { getMedicines, addMedicine, setMedicineStatus, updateMedicine, getAppointments, addAppointment, pushSOS, getSOS, getState, reset, markMissedOlderThan };
 })();
 window.storage = storage;

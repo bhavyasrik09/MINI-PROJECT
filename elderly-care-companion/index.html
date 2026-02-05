@@ -3,105 +3,321 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Elderly Care Companion — Elder</title>
+  <title>Elderly Care Companion</title>
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/elder.css">
 </head>
 <body>
-  <main class="container">
-    <div class="hero">
-      <div class="brand">Elderly Care Companion</div>
-      <div style="display:flex;gap:8px">
-        <button id="help-btn" class="big-btn secondary">Help</button>
-        <button id="voice-tips-btn" class="big-btn secondary">Voice Tips</button>
+  <div class="app-wrapper">
+    <!-- Navigation Navbar -->
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <span class="app-icon">❤️</span>
+        <span class="app-title">Care Companion</span>
       </div>
-    </div>
-    <h1 class="title">Simple, voice-first reminders</h1>
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-tab="home">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-label">Home</span>
+        </button>
+        <button class="nav-tab" data-tab="medicines">
+          <span class="tab-icon">💊</span>
+          <span class="tab-label">Medicines</span>
+        </button>
+        <button class="nav-tab" data-tab="appointments">
+          <span class="tab-icon">📅</span>
+          <span class="tab-label">Appointments</span>
+        </button>
+        <button class="nav-tab" data-tab="assistant">
+          <span class="tab-icon">🎤</span>
+          <span class="tab-label">Voice</span>
+        </button>
+        <button class="nav-tab" data-tab="emergency">
+          <span class="tab-icon">🚨</span>
+          <span class="tab-label">Emergency</span>
+        </button>
+      </div>
+    </nav>
 
-    <div class="help-panel" id="help-panel">
-      <h3>Quick Start</h3>
-      <ol class="help-list">
-        <li>Add a medicine: type the name, pick a time, then click Add.</li>
-        <li>When a reminder sounds, say <strong>"Taken"</strong> to confirm.</li>
-        <li>Use the <strong>🎤 Voice</strong> button to ask: <em>Next medicine</em>, <em>Today's schedule</em>, or <em>Call my son</em>.</li>
-        <li>Press <strong>🚨 SOS</strong> to send location to the caregiver dashboard (if allowed).</li>
-      </ol>
-    </div>
+    <!-- Main Content -->
+    <main class="main-content">
 
-    <section id="medicine" class="card">
-      <h2>Medicine Reminders</h2>
-      <form id="med-form">
-        <input id="med-name" placeholder="Medicine name" required />
-        <input id="med-time" type="time" required />
-        <button type="submit">Add</button>
-      </form>
-      <ul id="medicine-list"></ul>
-    </section>
+      <!-- TAB: HOME -->
+      <div class="tab-content active" id="tab-home">
+        <div class="container">
+          <div class="welcome-card">
+            <h1>Welcome to Care Companion</h1>
+            <p>Your voice-first health reminder system</p>
+            <div class="quick-status">
+              <div class="status-item">
+                <span class="status-number" id="medicines-count">0</span>
+                <span class="status-label">Medicines</span>
+              </div>
+              <div class="status-item">
+                <span class="status-number" id="appointments-count">0</span>
+                <span class="status-label">Appointments</span>
+              </div>
+              <div class="status-item">
+                <span class="status-number" id="last-taken">—</span>
+                <span class="status-label">Last Taken</span>
+              </div>
+            </div>
+          </div>
 
-    <section id="appointments" class="card">
-      <h2>Appointments</h2>
-      <form id="app-form">
-        <input id="app-title" placeholder="Title (e.g. Dr. Smith)" required />
-        <input id="app-datetime" type="datetime-local" required />
-        <input id="app-phone" placeholder="Phone (+country)" />
-        <button type="submit">Add</button>
-      </form>
-      <ul id="appointment-list"></ul>
-    </section>
+          <div class="help-panel">
+            <h3>Quick Start Guide</h3>
+            <ol class="help-list">
+              <li><strong>Add a medicine:</strong> Go to Medicines tab, enter name and time.</li>
+              <li><strong>Confirm when reminded:</strong> Say <strong>"Taken"</strong> when your reminder plays.</li>
+              <li><strong>Schedule appointments:</strong> Go to Appointments tab and add details.</li>
+              <li><strong>Use voice commands:</strong> Press Voice tab and say: "Next medicine", "Today's schedule".</li>
+              <li><strong>Emergency:</strong> Press SOS or say "HELP" to send location to caregiver.</li>
+            </ol>
+          </div>
 
-    <div class="controls">
-      <button id="voice-btn" class="big-btn">🎤 Voice</button>
-      <button id="sos-btn" class="sos-btn">🚨 SOS</button>
-    </div>
+          <div class="action-buttons">
+            <button class="action-btn primary" onclick="document.querySelector('[data-tab=medicines]').click()">
+              <span class="btn-icon">💊</span>
+              Add Medicine
+            </button>
+            <button class="action-btn primary" onclick="document.querySelector('[data-tab=appointments]').click()">
+              <span class="btn-icon">📅</span>
+              Add Appointment
+            </button>
+            <button class="action-btn secondary" onclick="document.querySelector('[data-tab=assistant]').click()">
+              <span class="btn-icon">🎤</span>
+              Try Voice Commands
+            </button>
+          </div>
+        </div>
+      </div>
 
-    <audio id="alert-audio" src="assets/audio/alert.mp3"></audio>
-  </main>
+      <!-- TAB: MEDICINES -->
+      <div class="tab-content" id="tab-medicines">
+        <div class="container">
+          <h2>Medicine Reminders</h2>
+          
+          <div class="form-card">
+            <h3>Add New Medicine</h3>
+            <form id="med-form">
+              <div class="form-group">
+                <label for="med-name">Medicine Name</label>
+                <input id="med-name" type="text" placeholder="e.g., Aspirin, Vitamin D" required />
+              </div>
+              <div class="form-group">
+                <label for="med-time">Time to Take</label>
+                <input id="med-time" type="time" required />
+              </div>
+              <button type="submit" class="btn-submit">Add Medicine</button>
+            </form>
+          </div>
 
+          <div class="medicines-list card">
+            <h3>Your Medicines</h3>
+            <ul id="medicine-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: APPOINTMENTS -->
+      <div class="tab-content" id="tab-appointments">
+        <div class="container">
+          <h2>Appointments</h2>
+          
+          <div class="form-card">
+            <h3>Add New Appointment</h3>
+            <form id="app-form">
+              <div class="form-group">
+                <label for="app-title">Doctor / Clinic Name</label>
+                <input id="app-title" type="text" placeholder="e.g., Dr. Smith, City Hospital" required />
+              </div>
+              <div class="form-group">
+                <label for="app-datetime">Date & Time</label>
+                <input id="app-datetime" type="datetime-local" required />
+              </div>
+              <div class="form-group">
+                <label for="app-phone">Phone Number (Optional)</label>
+                <input id="app-phone" type="tel" placeholder="e.g., +123456789" />
+              </div>
+              <button type="submit" class="btn-submit">Add Appointment</button>
+            </form>
+          </div>
+
+          <div class="appointments-list card">
+            <h3>Your Appointments</h3>
+            <ul id="appointment-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: VOICE ASSISTANT -->
+      <div class="tab-content" id="tab-assistant">
+        <div class="container">
+          <h2>Voice Assistant</h2>
+          
+          <div class="voice-panel card">
+            <h3>Ask Me Anything</h3>
+            <p class="voice-hint">Press the button below and speak your command. I can help with:</p>
+            <ul class="voice-commands">
+              <li>"What's my next medicine?"</li>
+              <li>"What is today's schedule?"</li>
+              <li>"Help" — to hear voice tips</li>
+              <li>"Call my son" — to notify caregiver</li>
+            </ul>
+
+            <div class="voice-controls">
+              <button id="voice-btn" class="btn-voice-large">
+                <span class="mic-icon">🎤</span>
+                Tap to Speak
+              </button>
+              <p id="voice-result" class="voice-result">Listening will appear here...</p>
+            </div>
+
+            <div class="tips-card">
+              <h4>Voice Tips</h4>
+              <p>Speak clearly and naturally. The system will repeat back what it understood.</p>
+              <button id="voice-tips-btn" class="btn-secondary">Read Tips Aloud</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: EMERGENCY / SOS -->
+      <div class="tab-content" id="tab-emergency">
+        <div class="container">
+          <h2>Emergency / SOS</h2>
+          
+          <div class="emergency-panel card">
+            <h3>Emergency Alert System</h3>
+            <p class="emergency-info">Press the SOS button below to immediately alert your caregiver and send your location.</p>
+
+            <div class="emergency-controls">
+              <button id="sos-btn" class="btn-sos-large">
+                <span class="sos-icon">🚨</span>
+                SOS - EMERGENCY
+              </button>
+            </div>
+
+            <div class="emergency-info-box">
+              <h4>What SOS Does:</h4>
+              <ul>
+                <li>✓ Sends alert to caregiver dashboard</li>
+                <li>✓ Captures your current location</li>
+                <li>✓ Records time and date</li>
+                <li>✓ Can also say "HELP" anytime</li>
+              </ul>
+            </div>
+
+            <div class="sos-history card">
+              <h3>Recent SOS Events</h3>
+              <ul id="sos-list"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Scripts -->
   <script src="js/storage.js"></script>
   <script src="js/voice.js"></script>
   <script src="js/medicine.js"></script>
+  <script src="js/appointment.js"></script>
   <script src="js/sos.js"></script>
   <script src="js/assistant.js"></script>
+
   <script>
-    // simple form wiring
-    const medForm = document.getElementById('med-form');
-    medForm?.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const name = document.getElementById('med-name').value.trim();
-      const time = document.getElementById('med-time').value;
-      if(name && time){ storage.addMedicine({ name, time }); medicine.renderList(); medForm.reset(); voice.speak(`${name} at ${time} added.`); }
-    });
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function(){
+      
+      // TAB NAVIGATION
+      function setupTabs(){
+        document.querySelectorAll('.nav-tab').forEach(btn=>{
+          btn.addEventListener('click', (e)=>{
+            e.preventDefault();
+            const tabName = btn.dataset.tab;
+            document.querySelectorAll('.nav-tab').forEach(b=> b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c=> c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+          });
+        });
+      }
+      setupTabs();
 
-    const appForm = document.getElementById('app-form');
-    appForm?.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const title = document.getElementById('app-title').value.trim();
-      const datetime = document.getElementById('app-datetime').value;
-      const phone = document.getElementById('app-phone').value.trim();
-      if(title && datetime){ storage.addAppointment({ title, datetime, phone });
-        renderAppointments(); appForm.reset(); voice.speak(`Appointment ${title} added.`); }
-    });
+      // MEDICINE FORM
+      const medForm = document.getElementById('med-form');
+      medForm?.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const name = document.getElementById('med-name').value.trim();
+        const time = document.getElementById('med-time').value;
+        if(name && time){ 
+          storage.addMedicine({ name, time }); 
+          medicine.renderList(); 
+          medForm.reset(); 
+          voice.speak(`${name} at ${time} added.`);
+        }
+      });
 
-    function renderAppointments(){
-      const ul = document.getElementById('appointment-list'); if(!ul) return; ul.innerHTML='';
-      const apps = storage.getAppointments();
-      apps.forEach(a=>{ const li = document.createElement('li'); const phonePart = a.phone? ` — <a href="tel:${a.phone}">Call</a>`: '';
-        li.innerHTML = `${a.title} — ${a.datetime}${phonePart}`; ul.appendChild(li); });
-    }
+      // APPOINTMENT FORM
+      const appForm = document.getElementById('app-form');
+      appForm?.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const title = document.getElementById('app-title').value.trim();
+        const datetime = document.getElementById('app-datetime').value;
+        const phone = document.getElementById('app-phone').value.trim();
+        if(title && datetime){ 
+          storage.addAppointment({ title, datetime, phone });
+          appointment.renderList(); 
+          appForm.reset(); 
+          voice.speak(`Appointment ${title} added.`);
+        }
+      });
 
-    // Help panel controls
-    document.getElementById('help-btn')?.addEventListener('click', ()=>{
-      const panel = document.getElementById('help-panel'); panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-    });
-    document.getElementById('voice-tips-btn')?.addEventListener('click', ()=>{
-      assistant.speakUsage();
-    });
+      // VOICE BUTTON
+      document.getElementById('voice-btn')?.addEventListener('click', ()=>{ 
+        assistant.listenForCommand(); 
+      });
 
-    window.addEventListener('load', ()=>{ medicine.renderList(); renderAppointments(); });
-  </script>
-  <script>
-    document.getElementById('voice-btn').addEventListener('click', ()=>{ assistant.listenForCommand(); });
-    document.getElementById('sos-btn').addEventListener('click', ()=>{ sos.triggerManualSOS(); });
+      // SOS BUTTON
+      document.getElementById('sos-btn')?.addEventListener('click', ()=>{ 
+        sos.triggerManualSOS(); 
+      });
+
+      // VOICE TIPS
+      document.getElementById('voice-tips-btn')?.addEventListener('click', ()=>{ 
+        assistant.speakUsage(); 
+      });
+
+      // HOME PAGE STATS
+      function updateHomeStats(){
+        const state = storage.getState();
+        document.getElementById('medicines-count').textContent = state.medicines.length;
+        document.getElementById('appointments-count').textContent = state.appointments.length;
+        const taken = state.medicines.filter(m=> m.status==='taken').length;
+        document.getElementById('last-taken').textContent = taken > 0 ? '✓' : '—';
+      }
+
+      // SOS LIST
+      function renderSosList(){
+        const ul = document.getElementById('sos-list'); if(!ul) return;
+        ul.innerHTML = '';
+        const sos = storage.getSOS();
+        if(sos.length === 0) ul.innerHTML = '<li>No SOS events yet</li>';
+        else sos.forEach(s=>{
+          const li = document.createElement('li');
+          li.textContent = `${s.time} ${s.lat? `@ ${s.lat.toFixed(4)},${s.lon.toFixed(4)}`: s.error||''}`;
+          ul.appendChild(li);
+        });
+      }
+
+      // INITIAL RENDER
+      medicine.renderList(); 
+      appointment.renderList();
+      updateHomeStats();
+      renderSosList();
+    });
   </script>
 </body>
 </html>
